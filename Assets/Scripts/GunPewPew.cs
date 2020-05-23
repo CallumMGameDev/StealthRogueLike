@@ -16,6 +16,11 @@ public class GunPewPew : MonoBehaviour
     [SerializeField]
     private float fireRate;
 
+    [SerializeField]
+    private ParticleSystem impact;
+    [SerializeField]
+    private ParticleSystem muzzleFlash;
+
     // Update is called once per frame
     void Update()
     {
@@ -27,8 +32,14 @@ public class GunPewPew : MonoBehaviour
 
     private void Shoot()
     {
-        GameObject bulletObject = Instantiate(bulletPrefab);
-        bulletObject.transform.position = this.transform.position + playerCamera.transform.forward;
-        bulletObject.transform.forward = playerCamera.transform.forward;
+        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        RaycastHit hit;
+        if(Physics.Raycast(ray, out hit))
+        {
+            ParticleSystem impactParticle = Instantiate(impact, hit.point, Quaternion.identity);
+            impactParticle.Play();
+        }
+        muzzleFlash.Play();
+
     }
 }
