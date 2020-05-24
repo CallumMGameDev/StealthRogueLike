@@ -1,20 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class GunPewPew : MonoBehaviour
+public abstract class GunPewPew : MonoBehaviour
 {
     [SerializeField]
     private Camera playerCamera;
 
     [SerializeField]
-    private GameObject bulletPrefab;
+    protected float damage;
     [SerializeField]
-    private float damage;
+    protected float range;
     [SerializeField]
-    private float range;
-    [SerializeField]
-    private float fireRate;
+    protected float fireRate;
+
+    protected float nextTimeToFire = 0f;
 
     [SerializeField]
     private ParticleSystem impact;
@@ -24,8 +22,9 @@ public class GunPewPew : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButton("Fire1") && Time.time >= nextTimeToFire)
         {
+            nextTimeToFire = Time.time + 1f / fireRate;
             Shoot();
         }
     }
@@ -38,8 +37,11 @@ public class GunPewPew : MonoBehaviour
         {
             ParticleSystem impactParticle = Instantiate(impact, hit.point, Quaternion.identity);
             impactParticle.Play();
+            WeaponProperties();
         }
         muzzleFlash.Play();
 
     }
+
+    protected abstract void WeaponProperties();
 }
