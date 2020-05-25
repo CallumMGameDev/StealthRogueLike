@@ -485,6 +485,8 @@ MonoBehaviour:
   damage: 0
   range: 2
   fireRate: 3
+  maxAmmo: 3
+  reloadTimer: 3
   impact: {fileID: 1102523736186653820, guid: 7091af2a39294c5439c6926d17095378, type: 3}
   muzzleFlash: {fileID: 922829918}
 --- !u!1 &1239275440

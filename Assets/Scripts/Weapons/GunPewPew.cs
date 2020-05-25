@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public abstract class GunPewPew : MonoBehaviour
 {
@@ -11,25 +12,46 @@ public abstract class GunPewPew : MonoBehaviour
     protected float range;
     [SerializeField]
     protected float fireRate;
+    [SerializeField]
+    protected float maxAmmo;
+    [SerializeField]
+    protected float reloadTimer;
 
+    protected float currentAmmo;
     protected float nextTimeToFire = 0f;
+    protected bool isReloading;
 
     [SerializeField]
     private ParticleSystem impact;
     [SerializeField]
     private ParticleSystem muzzleFlash;
 
-    // Update is called once per frame
+    private void Start()
+    {
+        currentAmmo = maxAmmo;
+    }
+
+
     void Update()
     {
-        if (Input.GetButton("Fire1") && Time.time >= nextTimeToFire)
+        if (isReloading)
+        {
+            return;
+        }
+        if (currentAmmo <= 0)
+        {
+            StartCoroutine(Reload());
+            return;
+        }
+        if (Input.GetButton("Fire1") && Time.time >= nextTimeToFire && currentAmmo != 0)
         {
             nextTimeToFire = Time.time + 1f / fireRate;
+            currentAmmo--;
             Shoot();
         }
     }
 
-    private void Shoot()
+    protected virtual void Shoot()
     {
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
         RaycastHit hit;
@@ -44,4 +66,14 @@ public abstract class GunPewPew : MonoBehaviour
     }
 
     protected abstract void WeaponProperties();
+
+    IEnumerator Reload()
+    {
+        isReloading = true;
+        Debug.Log("reloading");
+        yield return new WaitForSeconds(reloadTimer);
+        Debug.Log("done");
+        currentAmmo = maxAmmo;
+        isReloading = false;
+    }
 }
